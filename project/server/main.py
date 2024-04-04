@@ -26,16 +26,20 @@ except Exception as e:
 
 def upld():
     print("inside upld")
-    conn.send("911".encode())
 
-    print("sent 911")
-    # Recieve file name length, then file name
+    conn.send("200".encode())
+    #status code 200 tells about success request
+
+    print("sent 200")
+
     file_name_size = struct.unpack("h", conn.recv(2))[0]
-    file_name = conn.recv(file_name_size)
-    # Send message to let client know server is ready for document content
+    file_name = conn.recv(file_name_size).decode()
+    
     conn.send("1".encode())
     # Recieve file size
     file_size = struct.unpack("i", conn.recv(4))[0]
+
+    
     # Initialise and enter loop to recive file content
     start_time = time.time()
     output_file = open(file_name, "wb")

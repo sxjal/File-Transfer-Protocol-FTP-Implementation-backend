@@ -23,7 +23,7 @@ except Exception as e:
 
 def upld(file_name):
     # Upload a file
-    print("\nUploading file: {}...".format(file_name))
+    print("\nUploading file: ",file_name)
     try:
         print("inside try")
         
@@ -31,23 +31,32 @@ def upld(file_name):
             print("File doesn't exist. Make sure the file path is correct.")
             return
         # Make upload request
+
         print("making upload request")
         s.send("UPLD".encode())
 
-        print("upld sent")
+        
     except Exception as e:
         print("Couldn't make server request. Make sure a connection has been established.")
         print(e)
         return
+    
     try:
-        # Wait for server acknowledgement then send file details
-        # Wait for server ok
-        s.recv(BUFFER_SIZE).decode() 
-        # Send file name size and file name
-        s.send(struct.pack("h", sys.getsizeof(file_name)))
+       
+        statuscode = s.recv(BUFFER_SIZE).decode() 
+
+        if(statuscode == 200):
+            print()
+
+
+        filesize = sys.getsizeof(file_name)
+        s.send(struct.pack("h", filesize))
+
         s.send(file_name.encode())
+        
         # Wait for server ok then send file size
-        s.recv(BUFFER_SIZE)
+        s.recv(BUFFER_SIZE).decode()
+        
         s.send(struct.pack("i", os.path.getsize(file_name)))
     except Exception as e:
         print("Error sending file details")
@@ -73,9 +82,9 @@ def upld(file_name):
 
 while True:
     
-    print("1. UPLD: Upload File")
-    prompt = input("\nEnter a command: ")
-    
+    print("1. UPLD file name: Upload File")
+    #prompt = input("\nEnter a command: ")
+    prompt = "UPLD upld.txt"
     if prompt[:4].upper() == "UPLD":
         upld(prompt[5:])
    
