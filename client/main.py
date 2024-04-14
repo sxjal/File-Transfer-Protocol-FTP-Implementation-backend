@@ -17,7 +17,7 @@ def main():
             password = input("password: ")
             if(opcode == "100"):
                 access_control = input("access: ") #900 - admin, 901- read only, 902- write only
-                
+
             #100<SXJAL>12345:900
             message = opcode + "<" + username + ":" + password + ">" + access_control
             print(f"sending to server{message}")
@@ -44,10 +44,12 @@ def main():
                     print(f"Logged in. Welcome {username}!")
                 break
         
-        while(response != "204"):
+        while(message != "204"):
             response = ftp_socket.recv(1024).decode('UTF-8')
             print(response)
-            message = input("sxjal > ")
+            message = username + " > "
+            message = input(message)
+
 
 
         
