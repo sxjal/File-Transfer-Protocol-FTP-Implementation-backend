@@ -34,9 +34,30 @@ def handle_client(conn, addr):
     
     opcode = "200"
     while(opcode != "204"): 
-         
         conn.send(choice[accesscontroll].encode('UTF-8'))
         data = conn.recv(BUFFER_SIZE).decode()
+        opcode = data.split(" ")[0]
+
+        if(opcode == "301"):
+            #List Files on server
+            print()
+        elif(opcode == "302"):
+            # List local files 
+            print()
+        elif(opcode == "303"):
+            # Upload File : '303 filename' 
+            print()
+        elif(opcode == "304"): 
+            #Download file from Server : '304 filename' 
+            print()
+        elif(opcode == "305"):
+            # Delete file on server '305 filename'
+            print()
+        elif(opcode == "306"):
+            #  - Rename file on server : '306 oldname>newname'",
+            print()
+        else:
+            message = "307:Invalid Opcode"
         
         
 
