@@ -6,19 +6,19 @@ with open("backend/server/credentials.json", "r") as file:
 def create_user(username, password):
     if username in credentials:
         print("User already exists, code 101")
-        return False
+        return "101"
     else:
         credentials[username] = password
         with open("credentials.json", "w") as file:
             json.dump(credentials, file)
         print("User created successfully.")
-        return True
+        return "102"
     
 
 def authenticate(username, password):
     if username in credentials and credentials[username] == password:
         print('found, logged in, code 102')
-        return True
+        return "105"
     else:
         print('wrong creds, code 103')
-        return False
+        return "104"
