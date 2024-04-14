@@ -51,7 +51,7 @@
 import socket
 
 HOST = '127.0.0.1'  # Server's IP address
-PORT = 12345        # Port to listen on
+PORT = 12356        # Port to listen on
 
 def receive_file(conn, filename):
     with open(filename, 'wb') as f:
@@ -74,5 +74,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         filename = conn.recv(1024).decode()
         print(f"Receiving file '{filename}'")
 
+        filename
         # Receive file content from client
         receive_file(conn, filename)
