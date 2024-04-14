@@ -57,7 +57,6 @@ print("Password:", password)
 authcode = authenticate(username,password)
 
 while authcode:
-     
     print ("\n\nWaiting for instruction")
     data = conn.recv(BUFFER_SIZE).decode()
     print ("\n Operation: ",data)
