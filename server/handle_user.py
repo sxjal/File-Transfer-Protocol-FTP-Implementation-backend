@@ -1,14 +1,16 @@
 import json
+import hashlib
 
-with open("backend/server/credentials.json", "r") as file:
+with open("credentials.json", "r") as file:
     credentials = json.load(file)
 
-def create_user(username, password):
+def create_user(username, password, access_control):
     if username in credentials:
-        print("User already exists, code 101")
+        print("User already exists.")
         return "101"
     else:
-        credentials[username] = password
+        hashed_password = hashlib.sha256(password.encode()).hexdigest()
+        credentials[username] = {"password": hashed_password, "access_control": access_control}
         with open("credentials.json", "w") as file:
             json.dump(credentials, file)
         print("User created successfully.")
@@ -16,9 +18,10 @@ def create_user(username, password):
     
 
 def authenticate(username, password):
-    if username in credentials and credentials[username] == password:
-        print('found, logged in, code 102')
-        return "105"
-    else:
-        print('wrong creds, code 103')
-        return "104"
+    if username in credentials:
+        hashed_password = hashlib.sha256(password.encode()).hexdigest()
+        if credentials[username]['password'] == hashed_password:
+            print('found, logged in, code 102')
+            return "105"
+    print('wrong creds, code 103')
+    return "104"
