@@ -24,7 +24,8 @@ def handle_client(conn, addr):
         if(opcode == "100"): #create_user
             opcode = create_user(username=id,password=psw,access_control=accesscontroll)
         elif(opcode == "103"):
-            opcode = authenticate(username=id,password=psw)
+            opcode,accesscontroll = authenticate(username=id,password=psw)
+            
         else:
             opcode = "202"
         
@@ -33,7 +34,10 @@ def handle_client(conn, addr):
     
     opcode = "200"
     while(opcode != "204"): 
-        conn.send(choice[accesscontroll].encode())
+         
+        conn.send(choice[accesscontroll].encode('UTF-8'))
+        data = conn.recv(BUFFER_SIZE).decode()
+        
         
 
      

@@ -23,5 +23,5 @@ def authenticate(username, password):
         if credentials[username]['password'] == hashed_password:
             print('found, logged in, code 102')
             return "105"
-    print('wrong creds, code 103')
-    return "104"
+    
+    return "104", credentials[username]['access_control']
