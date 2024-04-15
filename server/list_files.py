@@ -26,7 +26,7 @@ def files_on_server(conn):
         print("file name size sent")
         # File name
         conn.recv(BUFFER_SIZE).decode() #351
-        conn.send(i.encode()) 
+        conn.send(i.split("/")[1].encode()) 
         conn.recv(BUFFER_SIZE).decode() #352
         print("file name sent")
         # File content size
