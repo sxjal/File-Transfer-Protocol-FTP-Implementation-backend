@@ -1,4 +1,5 @@
 import socket
+from listfiles import files_on_server,local_files
 
 def main():
     server_address = '127.0.0.1'
@@ -47,8 +48,33 @@ def main():
         while(message != "204"):
             response = ftp_socket.recv(1024).decode('UTF-8')
             print(response)
-            message = username + " > "
-            message = input(message)
+            cmd = username + " > "
+            message = input(cmd)
+            ftp_socket.sendall(message.encode())
+
+            if(opcode == "301"):
+            #List Files on server
+                files_on_server(conn=ftp_socket)
+                print()
+            elif(opcode == "302"):
+                # List local files 
+                print()
+            elif(opcode == "303"):
+                # Upload File : '303 filename' 
+                print()
+            elif(opcode == "304"): 
+                #Download file from Server : '304 filename' 
+                print()
+            elif(opcode == "305"):
+                # Delete file on server '305 filename'
+                print()
+            elif(opcode == "306"):
+                #  - Rename file on server : '306 oldname>newname'",
+                print()
+            else:
+                message = "307:Invalid Opcode"
+            
+
 
 
 

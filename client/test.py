@@ -4,7 +4,6 @@ password = input("password: ")
 access_control = input("access: ") #900 - admin, 901- read only, 902- write only
 
 data = opcode + "<" + username + ":" + password + ">" + access_control
-
 # 100 sajal>sajal:900
 code = data.split("<")[0]
 id = data.split("<")[1].split(":")[0]
