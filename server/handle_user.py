@@ -24,4 +24,7 @@ def authenticate(username, password):
             print('found, logged in, code 102')
             return "105"
     
-    return "104", credentials[username]['access_control']
+    return "104"
+
+def get_access_controll(username):
+    return credentials[username]['access_control']
