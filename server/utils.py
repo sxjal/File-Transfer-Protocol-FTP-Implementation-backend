@@ -1,6 +1,6 @@
 directory = 'Files'
 TCP_IP = "127.0.0.1"  
-TCP_PORT = 12356
+TCP_PORT = 12456
 BUFFER_SIZE = 1024 
 connections = 5
 choice = {

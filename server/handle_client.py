@@ -29,18 +29,22 @@ def handle_client(conn, addr):
             id = data.split("<")[1].split(":")[0]
             psw = data.split("<")[1].split(":")[1]
             opcode = authenticate(username=id,password=psw)
-            accesscontroll = get_access_controll(username=id)
+            if(opcode == "105"):
+                accesscontroll = get_access_controll(username=id)
+            else: 
+                accesscontroll = "000"
             print(f"Received message from client {opcode}<{id}:{psw}>{accesscontroll}")
         else:
-            opcode = "202" #error
-        
+            opcode = "202" #error        
         print(f"reponse form function: {opcode}")
-        conn.send(opcode.encode()) #send response code to the client
-    
+        conn.send(opcode.encode('UTF-8')) #send response code to the client: 105
+
     opcode = "200"
     while(opcode != "204"): 
         print("inside while")
-        conn.send("203".encode())
+        msg = "203"
+        conn.send(msg.encode())   #203
+        print(f"sent {msg}")
         conn.send(choice[accesscontroll].encode()) #sending choice
         print("sent")
         data = conn.recv(BUFFER_SIZE).decode()   #recieve choice 
