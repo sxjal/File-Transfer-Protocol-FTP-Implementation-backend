@@ -4,15 +4,39 @@ from listfiles import files_on_server,local_files
 def main(socket):
    
 
-    if(socket.recv(1024).decode() == "201"): #receive 201
+    if(socket.recv(1024).decode() == "201"): #receive 201 connection successfull, send credentials.
         while True:
-            opcode = input("100 or 103: ")  #100 - create, 103 - login
+            while(True):
+                opcode = input("Login | SIGNUP ")  #100 - create, 103 - login
+                if opcode == "LOGIN": 
+                    opcode = 103
+                    break
+                elif opcode == "SIGNUP":
+                    opcode = 100
+                    break
+                else:
+                    print("Invalid opcode, please try again.")
+                    continue
+
             username = input("Username: ")
             password = input("password: ")
              
-            if(opcode == "100"):
+            if(opcode == 100):
                 try:
-                    access_control = input("access: ") #900- admin, 901- read only, 902- write only
+                    while(True):
+                        access_control = input("Available Options\n ADMIN \n RO \n WO \nSet access Control:") #900- admin, 901- read only, 902- write only
+                        if access_control == "ADMIN": 
+                            opcode = 900
+                            break
+                        elif access_control == "RO":
+                            opcode = 901
+                            break
+                        elif access_control == "WO":
+                            opcode = 902
+                        else:
+                            print("Invalid code, please try again.")
+                            continue
+
                 except Exception as e:
                     print(e)
                     access_control = " "
@@ -20,16 +44,17 @@ def main(socket):
             else:
                 message = opcode + "<" + username + ":" + password 
             # message = opcode + "<" + username + ":" + password + ">" + access_control
-            print(f"sending to server{message}")
-            socket.sendall(message.encode())
-
-            response = socket.recv(1024).decode()
-            print(f"response: {response}")
+            print(f"sending to server {message}")
+            
+            socket.send(message.encode()) #sending credentials in an enoded message
+            response = socket.recv(1024).decode() #receive response
+            
+            print(f"response: {response} \n")
 
             code = ["101","104","202"]
 
             if response in code:
-                if response == "101":
+                if response == 101:
                     print("User already exists, Please try again")
                 elif response == "104":
                     print("Wrong Credentials, Please try again")
@@ -38,19 +63,25 @@ def main(socket):
                 continue
             
             else:
-                if response == "102":
+                if response == 102:
                     print(f"User created successfully! Welcome {username}!")
-                elif response == "105":
+                elif response == 105:
                     print(f"Logged in. Welcome {username}!")
                 break
-        
+
+        message = "200"
         while(message != "204"):
-            response = socket.recv(1024).decode()
-            print("\n")
+            sync = socket.recv().decode()
+            if(sync == "203"):
+                continue
+            else: 
+                print("lost connection with server")
+                # break
+
+            response = socket.recv().decode() #choices
             print(response)
-            print("\n")
-            
-            message = input("res")
+            cmd = username + "> "
+            message = input(cmd)
             socket.sendall(message.encode()) 
             opcode = message.split(" ")[0]
 
