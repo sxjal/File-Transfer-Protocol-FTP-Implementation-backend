@@ -1,13 +1,17 @@
 import struct
-import socket
+import os
 
-server_address = '127.0.0.1'
-server_port = 12356
+def local_files():
+    
+    files_dict = {}
+    print ("Local Files")
+    
+    for file_name in os.listdir("Files"):
+        file_size = os.path.getsize(os.path.join("Files",file_name))
+        files_dict[file_name] = file_size
+        print(f"{file_name} | {file_size} bytes")
 
-ftp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-ftp_socket.connect((server_address, server_port))
-
-print('connected')
+    return "200" 
 
 def files_on_server(conn):
    
@@ -40,22 +44,20 @@ def files_on_server(conn):
         # Get total size of directory
         for file_name, file_size in file_dict.items():
             print(f"{file_name} | {file_size} bytes")
-
+            
         total_directory_size = struct.unpack("i", conn.recv(4))[0]  
         conn.send("355".encode())
         print("Total directory size: {}b".format(total_directory_size))
     except Exception as e:
         print("Couldn't retrieve listing")
         print(e)
-        return
+        return "205"
     try:
         # Final check
         conn.send("200".encode())
-        return
+        return "200"
     except Exception as e:
         print("Couldn't get final server confirmation")
         print(e)
-        return
+        return "205"
 
-files_on_server(conn=ftp_socket) 
-input("halt")

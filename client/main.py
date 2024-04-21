@@ -1,30 +1,29 @@
 import socket
 from listfiles import files_on_server,local_files
 
-def main():
-    server_address = '127.0.0.1'
-    server_port = 12356
+def main(socket):
+   
 
-    ftp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    ftp_socket.connect((server_address, server_port))
-
-    print('connected')
-    
-
-    if(ftp_socket.recv(1024).decode() == "201"): #receive 201
+    if(socket.recv(1024).decode() == "201"): #receive 201
         while True:
             opcode = input("100 or 103: ")  #100 - create, 103 - login
             username = input("Username: ")
             password = input("password: ")
+             
             if(opcode == "100"):
-                access_control = input("access: ") #900 - admin, 901- read only, 902- write only
-
-            #100<SXJAL>12345:900
-            message = opcode + "<" + username + ":" + password + ">" + access_control
+                try:
+                    access_control = input("access: ") #900- admin, 901- read only, 902- write only
+                except Exception as e:
+                    print(e)
+                    access_control = " "
+                message = opcode + "<" + username + ":" + password + ">" + access_control
+            else:
+                message = opcode + "<" + username + ":" + password 
+            # message = opcode + "<" + username + ":" + password + ">" + access_control
             print(f"sending to server{message}")
-            ftp_socket.sendall(message.encode())
+            socket.sendall(message.encode())
 
-            response = ftp_socket.recv(1024).decode()
+            response = socket.recv(1024).decode()
             print(f"response: {response}")
 
             code = ["101","104","202"]
@@ -46,18 +45,20 @@ def main():
                 break
         
         while(message != "204"):
-            response = ftp_socket.recv(1024).decode('UTF-8')
+            response = socket.recv(1024).decode()
+            print("\n")
             print(response)
-            cmd = username + " > "
-            message = input(cmd)
-            ftp_socket.sendall(message.encode())
+            print("\n")
+            
+            message = input("res")
+            socket.sendall(message.encode()) 
+            opcode = message.split(" ")[0]
 
             if(opcode == "301"):
             #List Files on server
-                files_on_server(conn=ftp_socket)
-                print()
+                opcode = files_on_server(conn=socket)
             elif(opcode == "302"):
-                # List local files 
+                opcode = local_files()
                 print()
             elif(opcode == "303"):
                 # Upload File : '303 filename' 
@@ -82,4 +83,12 @@ def main():
     # ftp_socket.close()
 
 if __name__ == "__main__":
-    main()
+    server_address = '127.0.0.1'
+    server_port = 12356
+
+    ftp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    ftp_socket.connect((server_address, server_port))
+
+    print('connected')
+    
+    main(socket = ftp_socket)
