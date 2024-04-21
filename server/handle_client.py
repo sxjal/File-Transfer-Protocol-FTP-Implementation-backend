@@ -11,41 +11,39 @@ def handle_client(conn, addr):
     while(opcode in code):
         
         data = conn.recv(BUFFER_SIZE).decode() #receive creds
-        #EXAMPLES
-        #100 SXJAL:12345
-        #103 SXJAL:12345
-        # 103<harami:harami
+        
         opcode = data.split("<")[0]
         if(opcode == "100"): #create_user
             try:
                 id = data.split("<")[1].split(":")[0]
                 psw = data.split("<")[1].split(":")[1].split(">")[0]
                 accesscontroll = data.split("<")[1].split(":")[1].split(">")[1]
-                print(f"{opcode}<{id}:{psw}>{accesscontroll}")
+                print(f"Received message from client {opcode}<{id}:{psw}>{accesscontroll}")
             except Exception as e:
                 e
                 id = " "
                 psw = ""
                 accesscontroll = ""
             opcode = create_user(username=id,password=psw,access_control=accesscontroll)
-        elif(opcode == "103"):
+        elif(opcode == "103"): #login
             id = data.split("<")[1].split(":")[0]
             psw = data.split("<")[1].split(":")[1]
             opcode = authenticate(username=id,password=psw)
             accesscontroll = get_access_controll(username=id)
-            print(f"{opcode}<{id}:{psw}>{accesscontroll}")
+            print(f"Received message from client {opcode}<{id}:{psw}>{accesscontroll}")
         else:
-            opcode = "202"
+            opcode = "202" #error
         
-        print(f"reponse formn function: {opcode}")
-        conn.send(opcode.encode()) #send response code to the server
+        print(f"reponse form function: {opcode}")
+        conn.send(opcode.encode()) #send response code to the client
     
     opcode = "200"
     while(opcode != "204"): 
         print("inside while")
-        conn.send(choice[accesscontroll].encode())
+        conn.send("203".encode())
+        conn.send(choice[accesscontroll].encode()) #sending choice
         print("sent")
-        data = conn.recv(BUFFER_SIZE).decode()
+        data = conn.recv(BUFFER_SIZE).decode()   #recieve choice 
         opcode = data.split(" ")[0]
 
         if(opcode == "301"):
