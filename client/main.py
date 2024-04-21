@@ -7,12 +7,12 @@ def main(socket):
     if(socket.recv(1024).decode() == "201"): #receive 201 connection successfull, send credentials.
         while True:
             while(True):
-                opcode = input("Login | SIGNUP ")  #100 - create, 103 - login
-                if opcode == "LOGIN": 
-                    opcode = 103
+                opcode = input("Login | SIGNUP: ")  #100 - create, 103 - login
+                if opcode.upper() == "LOGIN": 
+                    opcode = "103"
                     break
-                elif opcode == "SIGNUP":
-                    opcode = 100
+                elif opcode.upper() == "SIGNUP":
+                    opcode = "100"
                     break
                 else:
                     print("Invalid opcode, please try again.")
@@ -21,25 +21,26 @@ def main(socket):
             username = input("Username: ")
             password = input("password: ")
              
-            if(opcode == 100):
+            if(opcode == "100"):
                 try:
                     while(True):
-                        access_control = input("Available Options\n ADMIN \n RO \n WO \nSet access Control:") #900- admin, 901- read only, 902- write only
-                        if access_control == "ADMIN": 
-                            opcode = 900
+                        access_control = input("Available Options\n ADMIN \n RO \n WO \nSet access Control: ") #900- admin, 901- read only, 902- write only
+                        if access_control.upper() == "ADMIN": 
+                            access_control = "900"
                             break
-                        elif access_control == "RO":
-                            opcode = 901
+                        elif access_control.upper() == "RO":
+                            access_control = "901"
                             break
-                        elif access_control == "WO":
-                            opcode = 902
+                        elif access_control.upper() == "WO":
+                            access_control = "902"
+                            break
                         else:
                             print("Invalid code, please try again.")
                             continue
 
                 except Exception as e:
                     print(e)
-                    access_control = " "
+                    access_control = 0
                 message = opcode + "<" + username + ":" + password + ">" + access_control
             else:
                 message = opcode + "<" + username + ":" + password 
@@ -47,41 +48,47 @@ def main(socket):
             print(f"sending to server {message}")
             
             socket.send(message.encode()) #sending credentials in an enoded message
-            response = socket.recv(1024).decode() #receive response
+            response = socket.recv(1024).decode('UTF-8') #receive response:105 for login
             
-            print(f"response: {response} \n")
-
+            print(f"useropcode from server: {response} \\n")
+            print("\n")
+            print(response)
             code = ["101","104","202"]
-
+            print(response in code)
             if response in code:
-                if response == 101:
+                print("into if")
+                if response == "101":
                     print("User already exists, Please try again")
                 elif response == "104":
                     print("Wrong Credentials, Please try again")
                 elif response == "202":
                     print("Invalid OPCODE sent to server, kindly check the opcode again")
                 continue
-            
             else:
-                if response == 102:
+                print("into else")
+                if response == "102":
                     print(f"User created successfully! Welcome {username}!")
-                elif response == 105:
+                elif response == "105":
                     print(f"Logged in. Welcome {username}!")
                 break
-
+        print("set msg = 200")
         message = "200"
-        while(message != "204"):
-            sync = socket.recv().decode()
+        while(True):
+            print("inside while")
+            sync = socket.recv(1024).decode()  #recv 203
+            print("recv sync")
             if(sync == "203"):
+                print(sync)
                 continue
             else: 
                 print("lost connection with server")
                 # break
-
-            response = socket.recv().decode() #choices
+            print("recv resp")
+            response = socket.recv(1024).decode() #choices
             print(response)
             cmd = username + "> "
             message = input(cmd)
+            print("sent msg")
             socket.sendall(message.encode()) 
             opcode = message.split(" ")[0]
 
@@ -115,7 +122,7 @@ def main(socket):
 
 if __name__ == "__main__":
     server_address = '127.0.0.1'
-    server_port = 12356
+    server_port = 12456
 
     ftp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     ftp_socket.connect((server_address, server_port))
